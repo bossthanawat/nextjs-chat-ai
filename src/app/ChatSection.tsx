@@ -38,7 +38,6 @@ const ChatSection = () => {
       { messages: [...chats, humanMessage] },
       {
         onSuccess: async ({ data }) => {
-          console.log(data);
           setChats((prev) => {
             const items = prev.slice(0, prev.length - 1);
             return [...items, {

@@ -58,7 +58,7 @@ const Chat = (props: ChatSectionProps) => {
                 <div className="flex flex-col gap-2">
                   {chats.map((chat, index) => (
                     <React.Fragment key={index}>
-                      {chat?.role === "human" && <div className="flex gap-2 items-center">
+                      {chat?.role === "human" && <div className="flex gap-2 items-start">
                         <Image
                           src={'/assets/images/notion-avatar-1.png'}
                           alt="user"
@@ -69,7 +69,7 @@ const Chat = (props: ChatSectionProps) => {
                           <p className="text-sm">{chat.content}</p>
                         </div>
                       </div>}
-                      {chat?.role === "ai" && <div className="flex gap-2 items-center">
+                      {chat?.role === "ai" && <div className="flex gap-2 items-start">
                         <Image
                           src={'/assets/images/notion-avatar-bot.png'}
                           alt="bot"

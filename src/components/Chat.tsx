@@ -3,9 +3,7 @@
 import { Controller, useForm, FormProvider } from 'react-hook-form';
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
+import ReactMarkdown from 'react-markdown';
 
 import BouncingDotsLoader from './BouncingDotsLoader';
 import Scrollbar from './Scrollbar';
@@ -82,7 +80,7 @@ const Chat = (props: ChatSectionProps) => {
                           <BouncingDotsLoader />
                         ) : (
                           <div className="bg-orange-100 p-3 rounded-r-xl rounded-bl-xl">
-                            <p className="text-sm">{chat?.content}</p>
+                            <p className="text-sm"><ReactMarkdown>{chat?.content}</ReactMarkdown></p>
                           </div>
                         )}
                       </div>}

@@ -11,6 +11,8 @@ import {
 import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 import DefaultRetrievalText from "@/lib/DefaultRetrievalText";
 import { ValueChat } from "@/components/Chat";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,25 +20,31 @@ export async function POST(request: NextRequest) {
     const messages = body.messages as ValueChat[];
 
     //Chat Models
-    const chat = new ChatOpenAI({
-      modelName: "gpt-3.5-turbo-1106",
-      temperature: 0.6,
-    });
-    // const chat = new ChatGoogleGenerativeAI({
-    //   apiKey: process.env.GOOGLE_API_KEY,
-    //   modelName: "gemini-pro",
-    //   maxOutputTokens: 2048,
+    // const chat = new ChatOpenAI({
+    //   modelName: "gpt-3.5-turbo-1106",
+    //   temperature: 0.6,
     // });
+    const chat = new ChatGoogleGenerativeAI({
+      apiKey: process.env.GOOGLE_API_KEY,
+      modelName: "gemini-pro",
+      maxOutputTokens: 2048,
+      temperature: 0.4,
+      safetySettings: [
+        {
+          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+          threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+        },
+      ],
+    });
 
     //Prompt Templates
     const questionAnsweringPrompt = ChatPromptTemplate.fromMessages([
       [
         "system",
-        "You are a helpful assistant. Answer all questions to the best of your ability based on the below context:{context}",
+        "You are a helpful assistant. I have additional information to context:{context}. You can answer things outside of context. ",
       ],
       new MessagesPlaceholder("messages"),
     ]);
-
 
     // Chat History
     const ephemeralChatMessageHistory = new ChatMessageHistory();

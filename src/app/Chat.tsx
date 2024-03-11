@@ -5,10 +5,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 
-import BouncingDotsLoader from './BouncingDotsLoader';
-import Scrollbar from './Scrollbar';
-import { Input } from './ui/input';
-import { Badge } from './ui/badge';
+import BouncingDotsLoader from '../components/BouncingDotsLoader';
+import Scrollbar from '../components/Scrollbar';
+import { Input } from '../components/ui/input';
+import { Badge } from '../components/ui/badge';
 
 export type UnitType = "human" | "ai"
 
@@ -26,10 +26,11 @@ type ChatSectionProps = {
   onSubmit: (data: ValueForm) => void;
   chats: ValueChat[];
   disabledType?: boolean;
+  listExamFirstMessage?: string[];
 }
 
 const Chat = (props: ChatSectionProps) => {
-  const { chats, onSubmit } = props;
+  const { chats, onSubmit, listExamFirstMessage } = props;
   const endRef = useRef<HTMLDivElement>(null);
 
   const methods = useForm<ValueForm>({
@@ -80,7 +81,9 @@ const Chat = (props: ChatSectionProps) => {
                           height={50}
                         />
                         {chat?.isLoading ? (
-                          <BouncingDotsLoader />
+                          <div className='self-center'>
+                            <BouncingDotsLoader />
+                          </div>
                         ) : (
                           <div className="bg-orange-100 p-3 rounded-r-xl rounded-bl-xl">
                             <div className="text-sm"><ReactMarkdown>{chat?.content}</ReactMarkdown></div>
@@ -110,19 +113,14 @@ const Chat = (props: ChatSectionProps) => {
               </>
             )}
             <div>
-              {!isDirty && <div className='flex gap-2 mb-2'>
-                <Badge
+              {!isDirty && listExamFirstMessage && <div className='flex gap-2 mb-2'>
+                {listExamFirstMessage.map((item, index) => (<Badge
+                  key={index}
                   variant="secondary"
                   className='cursor-pointer'
-                  onClick={() => setValue("message", "What's his name?", { shouldDirty: true })}>
-                  What&apos;s his name?
-                </Badge>
-                <Badge
-                  variant="secondary"
-                  className='cursor-pointer'
-                  onClick={() => setValue("message", "What does he like?", { shouldDirty: true })}>
-                  What does he like?
-                </Badge>
+                  onClick={() => setValue("message", item, { shouldDirty: true })}>
+                  {item}
+                </Badge>))}
               </div>}
               <Controller
                 name={'message'}

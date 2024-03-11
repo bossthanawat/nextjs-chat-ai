@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import Chat, { UnitType, ValueChat, ValueForm } from '@/components/Chat';
+import Chat, { UnitType, ValueChat, ValueForm } from '@/app/Chat';
 
 const ChatSection = () => {
   const mutateGPT = useMutation({
@@ -55,8 +55,7 @@ const ChatSection = () => {
               role: "ai" as UnitType,
               isLoading: false,
             }]
-          }
-          );
+          });
         },
       }
     );
@@ -64,7 +63,7 @@ const ChatSection = () => {
 
   return (
     <>
-      <Chat chats={chats} onSubmit={onSubmit} disabledType={mutateGPT.isPending}/>
+      <Chat chats={chats} onSubmit={onSubmit} disabledType={mutateGPT.isPending} listExamFirstMessage={["What's his name?", "What does he like?"]}/>
     </>)
 
 };

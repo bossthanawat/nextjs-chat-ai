@@ -37,6 +37,8 @@ export async function POST(request: NextRequest) {
       ],
     });
 
+    
+
     //Prompt Templates
     const questionAnsweringPrompt = ChatPromptTemplate.fromMessages([
       [
@@ -69,14 +71,12 @@ export async function POST(request: NextRequest) {
       prompt: questionAnsweringPrompt,
     });
 
-    const responseMessage = await documentChain.invoke({
+    const stream = await documentChain.stream({
       messages: await ephemeralChatMessageHistory.getMessages(),
       context: docs,
     });
 
-    return NextResponse.json({
-      content: responseMessage,
-    });
+    return new Response(stream)
   } catch (e) {
     console.log("err", e);
     return NextResponse.json({ error: e }, { status: 500 });

@@ -18,6 +18,9 @@ export default function Home() {
           <Link href="/chat-stream">
             <Button>Go to Chat stream</Button>
           </Link>
+          <Link href="/question/output-parser/basic">
+            <Button>Go to Question</Button>
+          </Link>
         </div>
       </div>
     </div>

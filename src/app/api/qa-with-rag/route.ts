@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import "cheerio";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings  } from "@langchain/google-genai";
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const splits = await textSplitter.splitDocuments(docs);
     const vectorStore = await MemoryVectorStore.fromDocuments(
       splits,
-      new OpenAIEmbeddings()
+      new GoogleGenerativeAIEmbeddings()
     );
 
     // Retrieve and generate using the relevant snippets of the blog.

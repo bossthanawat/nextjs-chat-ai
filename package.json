@@ -13,6 +13,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-query": "^5.22.2",
     "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "langchain": "^0.1.21",

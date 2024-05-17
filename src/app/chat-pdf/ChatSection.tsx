@@ -11,7 +11,7 @@ const ChatSection = () => {
       axios.post('/api/chat-pdf', {
         messages: messages,
       }, {
-        timeout: 30 * 1000,
+        timeout: 60 * 1000,
       }),
   });
 

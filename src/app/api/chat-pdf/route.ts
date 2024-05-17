@@ -10,8 +10,17 @@ import {
 import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 import DefaultRetrievalText from "@/lib/DefaultRetrievalText";
 import { ValueChat } from "@/app/Chat";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import {
+  ChatGoogleGenerativeAI,
+  GoogleGenerativeAIEmbeddings,
+} from "@langchain/google-genai";
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
+
+import { GitbookLoader } from "langchain/document_loaders/web/gitbook";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { ChatOpenAI } from "@langchain/openai";
+import { OpenAIEmbeddings } from "@langchain/openai";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,22 +28,22 @@ export async function POST(request: NextRequest) {
     const messages = body.messages as ValueChat[];
 
     //Chat Models
-    // const chat = new ChatOpenAI({
-    //   modelName: "gpt-3.5-turbo-1106",
-    //   temperature: 0.6,
-    // });
-    const chat = new ChatGoogleGenerativeAI({
-      apiKey: process.env.GOOGLE_API_KEY,
-      modelName: "gemini-pro",
-      maxOutputTokens: 2048,
-      temperature: 0.4,
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-        },
-      ],
+    const chat = new ChatOpenAI({
+      modelName: "gpt-3.5-turbo-1106",
+      temperature: 0.6,
     });
+    // const chat = new ChatGoogleGenerativeAI({
+    //   apiKey: process.env.GOOGLE_API_KEY,
+    //   modelName: "gemini-pro",
+    //   maxOutputTokens: 2048,
+    //   temperature: 0.1,
+    //   safetySettings: [
+    //     {
+    //       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    //       threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    //     },
+    //   ],
+    // });
 
     //Prompt Templates
     const questionAnsweringPrompt = ChatPromptTemplate.fromMessages([
@@ -61,12 +70,36 @@ export async function POST(request: NextRequest) {
     }
 
     // Retrievers
-    const docs = [new Document({ pageContent: DefaultRetrievalText })];
+    // const docs = [new Document({ pageContent: DefaultRetrievalText })];
+    const loader = new GitbookLoader(
+      "https://easyrice-1.gitbook.io/easy-rice-m0",
+      {
+        shouldLoadAllPaths: true,
+      }
+    );
+    const rawDocs = await loader.load();
+    const textSplitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 500,
+      chunkOverlap: 0,
+    });
+
+    const allSplits = await textSplitter.splitDocuments(rawDocs);
+
+    const vectorstore = await MemoryVectorStore.fromDocuments(
+      allSplits,
+      // new GoogleGenerativeAIEmbeddings() 
+      new OpenAIEmbeddings()
+    );
 
     const documentChain = await createStuffDocumentsChain({
       llm: chat,
       prompt: questionAnsweringPrompt,
     });
+
+    const retriever = vectorstore.asRetriever(4);
+
+
+    const docs = await retriever.invoke(messages[messages.length - 1].content);
 
     const responseMessage = await documentChain.invoke({
       messages: await ephemeralChatMessageHistory.getMessages(),

@@ -22,6 +22,12 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { ChatOpenAI } from "@langchain/openai";
 import { OpenAIEmbeddings } from "@langchain/openai";
 
+import type { BaseMessage } from "@langchain/core/messages";
+import {
+  RunnablePassthrough,
+  RunnableSequence,
+} from "@langchain/core/runnables";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -49,7 +55,7 @@ export async function POST(request: NextRequest) {
     const questionAnsweringPrompt = ChatPromptTemplate.fromMessages([
       [
         "system",
-        "You are a helpful assistant. I have additional information to context:{context}. You can answer things outside of context. ",
+        "You are a helpful assistant. I have additional information to context:{context}. You can answer things outside of context. Respond using markdown.",
       ],
       new MessagesPlaceholder("messages"),
     ]);
@@ -98,15 +104,33 @@ export async function POST(request: NextRequest) {
 
     const retriever = vectorstore.asRetriever(4);
 
-    const docs = await retriever.invoke(messages[messages.length - 1].content);
+    // const docs = await retriever.invoke(messages[messages.length - 1].content);
 
-    const responseMessage = await documentChain.invoke({
-      messages: await ephemeralChatMessageHistory.getMessages(),
-      context: docs,
+    // const responseMessage = await documentChain.invoke({
+    //   messages: await ephemeralChatMessageHistory.getMessages(),
+    //   context: docs,
+    // });
+
+
+    // ------
+
+    const parseRetrieverInput = (params: { messages: BaseMessage[] }) => {
+      return params.messages[params.messages.length - 1].content;
+    };
+    
+    const retrievalChain = RunnablePassthrough.assign({
+      context: RunnableSequence.from([parseRetrieverInput, retriever]),
+    }).assign({
+      answer: documentChain,
     });
 
+    const responseMessage = await retrievalChain.invoke({
+      messages: await ephemeralChatMessageHistory.getMessages(),
+    });
+
+
     return NextResponse.json({
-      content: responseMessage,
+      content: responseMessage?.answer,
     });
   } catch (e: any) {
     console.log("err", e);

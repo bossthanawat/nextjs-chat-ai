@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     const vectorstore = await MemoryVectorStore.fromDocuments(
       allSplits,
-      // new GoogleGenerativeAIEmbeddings() 
+      // new GoogleGenerativeAIEmbeddings()
       new OpenAIEmbeddings()
     );
 
@@ -97,7 +97,6 @@ export async function POST(request: NextRequest) {
     });
 
     const retriever = vectorstore.asRetriever(4);
-
 
     const docs = await retriever.invoke(messages[messages.length - 1].content);
 
@@ -109,8 +108,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       content: responseMessage,
     });
-  } catch (e) {
+  } catch (e: any) {
     console.log("err", e);
-    return NextResponse.json({ error: e }, { status: 500 });
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

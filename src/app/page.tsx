@@ -24,6 +24,9 @@ export default function Home() {
           <Link href="/chat-pdf">
             <Button>Go to Chat PDF</Button>
           </Link>
+          <Link href="/chat-qa">
+            <Button>Go to Chat Q&A</Button>
+          </Link>
         </div>
       </div>
     </div>

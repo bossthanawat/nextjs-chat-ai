@@ -21,9 +21,9 @@ export default function Home() {
           <Link href="/question/output-parser/basic">
             <Button>Go to Question</Button>
           </Link>
-          <Link href="/chat-pdf">
+          {/* <Link href="/chat-pdf">
             <Button>Go to Chat PDF</Button>
-          </Link>
+          </Link> */}
           <Link href="/chat-qa">
             <Button>Go to Chat Q&A</Button>
           </Link>

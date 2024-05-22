@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     //   temperature: 0.6,
     // });
     const chat = new ChatGoogleGenerativeAI({
-      apiKey: process.env.GOOGLE_API_KEY,
+      apiKey: process.env.GOOGLE_API_KEY_MANUAL,
       modelName: "gemini-pro",
       maxOutputTokens: 2048,
       temperature: 0.4,

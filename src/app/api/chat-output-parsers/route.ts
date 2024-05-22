@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const question = body.question as string;
 
     const chat = new ChatGoogleGenerativeAI({
-      apiKey: process.env.GOOGLE_API_KEY,
+      apiKey: process.env.GOOGLE_API_KEY_MANUAL,
       modelName: "gemini-pro",
       maxOutputTokens: 2048,
       temperature: 0,

@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     );
 
     const documentChain = await createStuffDocumentsChain({
-      llm: chat,
+      llm: chat as any,
       prompt: questionAnsweringPrompt,
     });
 

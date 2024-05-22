@@ -16,7 +16,7 @@ import { formatDocumentsAsString } from "langchain/util/document";
 export async function GET(request: NextRequest) {
   try {
     const llm = new ChatGoogleGenerativeAI({
-      apiKey: process.env.GOOGLE_API_KEY,
+      apiKey: process.env.GOOGLE_API_KEY_MANUAL,
       modelName: "gemini-pro",
       maxOutputTokens: 2048,
       temperature: 0,

@@ -39,17 +39,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const messages = body.messages as ValueChat[];
 
-    // const credential = JSON.parse(
-    //   Buffer.from(
-    //     process.env.GOOGLE_APPLICATION_CREDENTIALS as string,
-    //     "base64"
-    //   ).toString().replace(/\n/g,"")
-    // );
+    const credential = JSON.parse(
+      Buffer.from(
+        process.env.GOOGLE_APPLICATION_CREDENTIALS_BASE64 as string,
+        "base64"
+      )
+        .toString()
+        .replace(/\n/g, "")
+    );
+
     const chat = new VertexAI({
       temperature: 0,
       model: "gemini-1.0-pro",
       authOptions: {
         projectId: "chat-ai-project-423407",
+        credentials: credential,
       },
     });
 
@@ -72,6 +76,10 @@ export async function POST(request: NextRequest) {
       allSplits,
       new GoogleVertexAIEmbeddings({
         model: "text-multilingual-embedding-002",
+        authOptions: {
+          projectId: "chat-ai-project-423407",
+          credentials: credential,
+        },
       })
     );
     // You are a helpful assistant. Only answer that relevant to context or answer AI gave earlier. Respond using markdown.

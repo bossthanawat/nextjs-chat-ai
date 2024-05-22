@@ -13,7 +13,6 @@
     "@langchain/google-genai": "^0.0.10",
     "@langchain/google-vertexai": "^0.0.16",
     "@langchain/google-vertexai-web": "^0.0.15",
-    "@langchain/openai": "^0.0.33",
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-query": "^5.22.2",
     "axios": "^1.6.7",

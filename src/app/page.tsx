@@ -12,7 +12,6 @@ export default function Home() {
       <div className="mt-4 mx-auto w-full bg-white border [box-shadow:5px_5px_rgb(82_82_82)] rounded-lg overflow-hidden p-2">
         <ChatSection />
       </div>
-      <div className="mt-4 text-sm text-gray-600 text-end">Model: gemini-pro</div>
       <div className="mt-20">
         <div className="flex flex-col gap-4 items-start">
           <Link href="/chat-stream">

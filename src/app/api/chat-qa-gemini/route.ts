@@ -31,29 +31,27 @@ import { writeFile } from "fs";
 import { allSplits } from "./allSplits";
 import { pull } from "langchain/hub";
 import { StringOutputParser } from "@langchain/core/output_parsers";
+import { VertexAI } from "@langchain/google-vertexai";
+import { GoogleVertexAIEmbeddings } from "@langchain/community/embeddings/googlevertexai";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const messages = body.messages as ValueChat[];
 
-    //Chat Models
-    const chat = new ChatOpenAI({
-      modelName: "gpt-3.5-turbo-1106",
-      temperature: 0.4,
+    // const credential = JSON.parse(
+    //   Buffer.from(
+    //     process.env.GOOGLE_APPLICATION_CREDENTIALS as string,
+    //     "base64"
+    //   ).toString().replace(/\n/g,"")
+    // );
+    const chat = new VertexAI({
+      temperature: 0,
+      model: "gemini-1.0-pro",
+      authOptions: {
+        projectId: "chat-ai-project-423407",
+      },
     });
-    // const chat = new ChatGoogleGenerativeAI({
-    //   apiKey: process.env.GOOGLE_API_KEY,
-    //   modelName: "gemini-pro",
-    //   maxOutputTokens: 2048,
-    //   temperature: 0.1,
-    //   safetySettings: [
-    //     {
-    //       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    //       threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-    //     },
-    //   ],
-    // });
 
     // Chat History
     const ephemeralChatMessageHistory = new ChatMessageHistory();
@@ -70,31 +68,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Retrievers
-    // const docs = [new Document({ pageContent: DefaultRetrievalText })];
-    // const loader = new GitbookLoader(
-    //   "https://easyrice-1.gitbook.io/easy-rice-m0",
-    //   {
-    //     shouldLoadAllPaths: true,
-    //   }
-    // );
-    // const rawDocs = await loader.load();
-    // const textSplitter = new RecursiveCharacterTextSplitter({
-    //   chunkSize: 500,
-    //   chunkOverlap: 0,
-    // });
-
-    // const allSplits = await textSplitter.splitDocuments(rawDocs);
-    // await writeFile(
-    //   "allSplits.json",
-    //   JSON.stringify(allSplits, null, 2),
-    //   {},
-    //   (data) => {console.log("data", data)}
-    // );
-
     const vectorstore = await MemoryVectorStore.fromDocuments(
       allSplits,
-      new OpenAIEmbeddings()
+      new GoogleVertexAIEmbeddings({
+        model: "text-multilingual-embedding-002",
+      })
     );
     // You are a helpful assistant. Only answer that relevant to context or answer AI gave earlier. Respond using markdown.
     const questionAnsweringPrompt = ChatPromptTemplate.fromMessages([
@@ -130,7 +108,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       content: responseMessage?.answer,
     });
-
   } catch (e: any) {
     console.log("err", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
